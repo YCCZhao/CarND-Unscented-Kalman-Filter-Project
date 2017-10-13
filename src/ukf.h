@@ -28,9 +28,6 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
-  ///* predicted sigma points matrix
-  MatrixXd Xsig_pred_;
-
   ///* time when the state is true, in us
   long long time_us_;
 
@@ -64,9 +61,29 @@ public:
   ///* Augmented state dimension
   int n_aug_;
 
+  ///* Number of sigma points
+  int n_sigma_;
+
   ///* Sigma point spreading parameter
   double lambda_;
 
+  ///* predicted sigma points state matrix
+  MatrixXd Xsig_;
+  MatrixXd Xsig_pred_;
+
+  ///* predicted sigma points radar measurement matrix
+  MatrixXd Z_rad_sig_;
+  MatrixXd Z_rad_sig_pred_;
+
+  ///* predicted sigma points lidar measurement matrix
+  MatrixXd Z_las_sig_;
+  MatrixXd Z_las_sig_pred_;
+
+  ///* radar measurement covariance matrix
+  MatrixXd S_rad;
+
+  ///* lidar measurement covariance matrix
+  MatrixXd S_las;
 
   /**
    * Constructor
