@@ -11,7 +11,16 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 class UKF {
+
 public:
+
+  ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
+  VectorXd x;
+
+  ///* state covariance matrix
+  MatrixXd P;
+
+private:
 
   ///* initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
@@ -21,12 +30,6 @@ public:
 
   ///* if this is false, radar measurements will be ignored (except for init)
   bool use_radar_;
-
-  ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
-  VectorXd x_;
-
-  ///* state covariance matrix
-  MatrixXd P_;
 
   ///* time when the state is true, in us
   long long time_us_;
@@ -52,9 +55,6 @@ public:
   ///* Radar measurement noise standard deviation radius change in m/s
   double std_radrd_ ;
 
-  ///* Weights of sigma points
-  VectorXd weights_;
-
   ///* State dimension
   int n_x_;
 
@@ -67,23 +67,32 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
-  ///* predicted sigma points state matrix
+  ///* Weights of sigma points
+  VectorXd weights_;
+
+  ///* augmented state vector
+  VectorXd Xaug_;
+
+  ///* matrix of predicted state sigma points
   MatrixXd Xsig_;
+
+  ///* mean of predicted state sigma points
   MatrixXd Xsig_pred_;
 
-  ///* predicted sigma points radar measurement matrix
-  MatrixXd Z_rad_sig_;
-  MatrixXd Z_rad_sig_pred_;
+  ///* mean and a state sigma point difference
+  VectorXd Xdiff_;
 
-  ///* predicted sigma points lidar measurement matrix
-  MatrixXd Z_las_sig_;
-  MatrixXd Z_las_sig_pred_;
+  ///* matrix of predicted measurement sigma points
+  MatrixXd Zsig_;
 
-  ///* radar measurement covariance matrix
-  MatrixXd S_rad;
+  ///* mean of predicted measurement sigma points
+  MatrixXd Zsig_pred_;
 
-  ///* lidar measurement covariance matrix
-  MatrixXd S_las;
+  ///* mean and a measurement sigma point difference
+  VectorXd Zdiff_;
+
+  ///* measurement covariance matrix
+  MatrixXd S_;
 
   /**
    * Constructor
@@ -119,6 +128,8 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+
 };
 
 #endif /* UKF_H */
