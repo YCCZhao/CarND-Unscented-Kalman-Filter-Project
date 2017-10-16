@@ -12,14 +12,6 @@ using Eigen::VectorXd;
 
 class UKF {
 
-public:
-
-  ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
-  VectorXd x;
-
-  ///* state covariance matrix
-  MatrixXd P;
-
 private:
 
   ///* initially set to false, set to true in first call of ProcessMeasurement
@@ -70,9 +62,6 @@ private:
   ///* Weights of sigma points
   VectorXd weights_;
 
-  ///* augmented state vector
-  VectorXd Xaug_;
-
   ///* matrix of predicted state sigma points
   MatrixXd Xsig_;
 
@@ -80,20 +69,27 @@ private:
   MatrixXd Xsig_pred_;
 
   ///* mean and a state sigma point difference
-  VectorXd Xdiff_;
+  MatrixXd Xdiff_;
 
   ///* matrix of predicted measurement sigma points
   MatrixXd Zsig_;
 
   ///* mean of predicted measurement sigma points
-  MatrixXd Zsig_pred_;
+  VectorXd Zsig_pred_;
 
   ///* mean and a measurement sigma point difference
-  VectorXd Zdiff_;
+  MatrixXd Zdiff_;
 
   ///* measurement covariance matrix
   MatrixXd S_;
 
+public:
+
+  ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
+  VectorXd x;
+
+  ///* state covariance matrix
+  MatrixXd P;
   /**
    * Constructor
    */
@@ -115,20 +111,25 @@ private:
    * matrix
    * @param delta_t Time between k and k+1 in s
    */
-  void Prediction(double delta_t);
-
+  void Prediction(double delta_t_);
+ 
   /**
-   * Updates the state and the state covariance matrix using a laser measurement
+   * Updates the state and the state covariance matrix using a sensor measurement
    * @param meas_package The measurement at k+1
-   */
-  void UpdateLidar(MeasurementPackage meas_package);
+   */ 
+  void Update(MeasurementPackage meas_package);
 
-  /**
-   * Updates the state and the state covariance matrix using a radar measurement
-   * @param meas_package The measurement at k+1
-   */
-  void UpdateRadar(MeasurementPackage meas_package);
-
+  void InitiateMeasurement(MeasurementPackage meas_package);
+  
+  void AugmentedSigmaPoints();
+  
+  void SigmaPointPrediction(double delta_t_);
+  
+  void PredictMeanAndCovariance();
+  
+  void PredictMeasurement(MeasurementPackage meas_package);
+  
+  void UpdateState(MeasurementPackage meas_package) ;
 
 };
 
