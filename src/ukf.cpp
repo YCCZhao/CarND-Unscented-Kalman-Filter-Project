@@ -125,16 +125,19 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
     // time step
     float delta_t_ = (meas_package.timestamp_ - time_us_)/1000000.0;
+    time_us_ = meas_package.timestamp_;
 
     // predict k+1
     Prediction(delta_t_);
+	
   /*****************************************************************************
    *  Update
    ****************************************************************************/
 
     Update(meas_package);
-
-    time_us_ = meas_package.timestamp_;
+	
+	cout<<x<<endl;
+	cout<<P<<endl;
 }
 
 /**
@@ -209,7 +212,7 @@ void UKF::InitiateMeasurement(MeasurementPackage meas_package) {
 
             }
 			
-	    // set weights
+	// set weights
     weights_(0) = lambda_ / (lambda_ + n_aug_);
     for (int i = 1; i < n_sigma_; i++) {
         weights_(i) = 1 / (2 * (lambda_ + n_aug_));
@@ -236,7 +239,7 @@ void UKF::AugmentedSigmaPoints() {
     MatrixXd Psqrt_ = Paug_.llt().matrixL();
 
     Xsig_.col(0) = Xaug_;
-    for (int i = 1; i < n_aug_; i++)
+    for (int i = 0; i < n_aug_; i++)
     {
         Xsig_.col(i + 1)          = Xaug_ + sqrt(lambda_ + n_aug_) * Psqrt_.col(i);
         Xsig_.col(i + 1 + n_aug_) = Xaug_ - sqrt(lambda_ + n_aug_) * Psqrt_.col(i);
@@ -312,11 +315,6 @@ void UKF::PredictMeanAndCovariance() {
 
 		while (Xdiff_(3, i) < -M_PI) Xdiff_(3, i) += 2*M_PI;
         while (Xdiff_(3, i) > M_PI) Xdiff_(3, i) -= 2*M_PI;
-		
-		//while (Xdiff_(4, i) < -M_PI) Xdiff_(4, i) += 2*M_PI;
-        //while (Xdiff_(4, i) > M_PI) Xdiff_(4, i) -= 2*M_PI;
-
-
 
     }
 
@@ -448,18 +446,17 @@ void UKF::UpdateState(MeasurementPackage meas_package) {
         }
 
 	//calculate NIS
-	
-    double NIS = z_cor_.transpose() * S_.inverse() * z_cor_;
-	cout<<"NIS:"<<endl;
-	cout<<NIS<<endl;
+	if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+		NIS_rad = z_cor_.transpose() * S_.inverse() * z_cor_;}
+	else {
+		NIS_las = z_cor_.transpose() * S_.inverse() * z_cor_;}
+
 	
     x += K_ * z_cor_;
     P -= K_ * S_ * K_.transpose();
 	while (x(3)> M_PI) x(3)-=2.*M_PI;
     while (x(3)<-M_PI) x(3)+=2.*M_PI;
-	
-	cout<<x<<endl;
-	cout<<P<<endl;
+
 }
 
 

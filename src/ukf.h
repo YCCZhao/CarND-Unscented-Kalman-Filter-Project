@@ -90,6 +90,10 @@ public:
 
   ///* if this is false, radar measurements will be ignored (except for init)
   bool use_radar;
+  
+  ///* NIS
+  double NIS_las;
+  double NIS_rad;
 
   /**
    * Constructor
