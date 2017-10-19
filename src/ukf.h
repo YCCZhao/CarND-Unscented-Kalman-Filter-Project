@@ -14,15 +14,6 @@ class UKF {
 
 private:
 
-  ///* initially set to false, set to true in first call of ProcessMeasurement
-  bool is_initialized_;
-
-  ///* if this is false, laser measurements will be ignored (except for init)
-  bool use_laser_;
-
-  ///* if this is false, radar measurements will be ignored (except for init)
-  bool use_radar_;
-
   ///* time when the state is true, in us
   long long time_us_;
 
@@ -90,6 +81,16 @@ public:
 
   ///* state covariance matrix
   MatrixXd P;
+
+  ///* initially set to false, set to true in first call of ProcessMeasurement
+  bool is_initialized;
+
+  ///* if this is false, laser measurements will be ignored (except for init)
+  bool use_laser;
+
+  ///* if this is false, radar measurements will be ignored (except for init)
+  bool use_radar;
+
   /**
    * Constructor
    */
@@ -112,23 +113,23 @@ public:
    * @param delta_t Time between k and k+1 in s
    */
   void Prediction(double delta_t_);
- 
+
   /**
    * Updates the state and the state covariance matrix using a sensor measurement
    * @param meas_package The measurement at k+1
-   */ 
+   */
   void Update(MeasurementPackage meas_package);
 
   void InitiateMeasurement(MeasurementPackage meas_package);
-  
+
   void AugmentedSigmaPoints();
-  
+
   void SigmaPointPrediction(double delta_t_);
-  
+
   void PredictMeanAndCovariance();
-  
+
   void PredictMeasurement(MeasurementPackage meas_package);
-  
+
   void UpdateState(MeasurementPackage meas_package) ;
 
 };

@@ -48,16 +48,16 @@ int main()
 
       auto s = hasData(std::string(data));
       if (s != "") {
-
+      	
         auto j = json::parse(s);
 
         std::string event = j[0].get<std::string>();
-
+        
         if (event == "telemetry") {
           // j[1] is the data JSON object
-
+          
           string sensor_measurment = j[1]["sensor_measurement"];
-
+          
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
     	  long long timestamp;
@@ -94,23 +94,19 @@ int main()
     	  float y_gt;
     	  float vx_gt;
     	  float vy_gt;
-		  float yaw_dt;
-		  float yawd_dt;
     	  iss >> x_gt;
     	  iss >> y_gt;
     	  iss >> vx_gt;
     	  iss >> vy_gt;
-		  iss >> yaw_dt;
-		  iss >> yawd_dt;
     	  VectorXd gt_values(4);
     	  gt_values(0) = x_gt;
-    	  gt_values(1) = y_gt;
+    	  gt_values(1) = y_gt; 
     	  gt_values(2) = vx_gt;
     	  gt_values(3) = vy_gt;
     	  ground_truth.push_back(gt_values);
-
+          
           //Call ProcessMeasurment(meas_package) for Kalman filter
-    	  ukf.ProcessMeasurement(meas_package);
+    	  ukf.ProcessMeasurement(meas_package);    	  
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
@@ -128,12 +124,7 @@ int main()
     	  estimate(1) = p_y;
     	  estimate(2) = v1;
     	  estimate(3) = v2;
-cout << "state"<<endl;	  
-cout << ukf.x<<endl;
-cout << ukf.P<<endl;
-cout << "ground truth"<<endl;
-cout <<yaw_dt<< endl;
-
+    	  
     	  estimations.push_back(estimate);
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
@@ -148,10 +139,10 @@ cout <<yaw_dt<< endl;
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-
+	  
         }
       } else {
-
+        
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
